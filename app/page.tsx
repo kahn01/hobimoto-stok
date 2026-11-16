@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { BrowserMultiFormatReader } from "@zxing/browser";
-import { AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Barcode, Camera, Check, ChevronRight, CirclePlus, Clock3, Package, Pencil, Search, Trash2, X } from "lucide-react";
+import { AlertTriangle, ArrowDownToLine, ArrowUpFromLine, Barcode, Camera, Check, ChevronRight, CirclePlus, Clock3, Package, Pencil, Search, Trash2, X, LogOut } from "lucide-react";
 
 type Product = { barcode:string; name:string; category:string; price:number; stock:number; critical:number; shelf:string };
 type Log = { id:string; date:string; type:string; barcode:string; name:string; quantity:number; user:string };
@@ -100,7 +100,7 @@ export default function Home() {
       <div className="sideBottom"><div className="statusDot"/> Sistem hazır <small>Google Sheets bağlantısı</small></div>
     </aside>
     <section className="main">
-      <header className="topbar"><div><span className="eyebrow">HOBIMOTO / YÖNETİM</span><h1>Genel Bakış</h1></div><button className="primary" onClick={openNew}><CirclePlus size={17}/> Ürün Ekle</button></header>
+      <header className="topbar"><div><span className="eyebrow">HOBIMOTO / YÖNETİM</span><h1>Genel Bakış</h1></div><div className="topActions"><button className="logoutButton" onClick={async()=>{await fetch("/api/auth/logout",{method:"POST"});window.location.href="/login";}}><LogOut size={16}/> Çıkış</button><button className="primary" onClick={openNew}><CirclePlus size={17}/> Ürün Ekle</button></div></header>
       <div className="content">
         <div className="welcome"><div><span className="eyebrow light">STOK KONTROL MERKEZİ</span><h2>Mağazan kontrol altında.</h2><p>Ürünlerini yönet, barkod okut ve stok hareketlerini anlık takip et.</p></div><div className="welcomeIcon"><Barcode size={58}/></div></div>
         <div className="stats">
