@@ -9,3 +9,42 @@
 @media(max-width:680px){.topActions{gap:6px}.logoutButton{padding:10px 8px;font-size:10px}.loginCard{padding:25px 21px}}
 
 .productBarcodeField{display:flex;align-items:center;gap:7px}.productBarcodeField input{height:42px;flex:1;min-width:0;border:1px solid #e1e6e9;border-radius:7px;padding:0 11px;outline:0;color:var(--ink)}.productBarcodeField input:focus{border-color:var(--orange)}.productBarcodeField input:disabled{background:#f5f6f7;color:#9ba4ac}.productBarcodeField .cameraBtn{height:42px;width:auto;padding:0 12px;display:flex;align-items:center;gap:6px;white-space:nowrap}.modalCameraLayer{position:fixed;inset:12vh 10vw;z-index:30;box-shadow:0 20px 70px #0007;padding:16px}.modalCameraLayer video{height:calc(100% - 72px)}@media(max-width:680px){.modalCameraLayer{inset:12vh 5vw;padding:10px}.productBarcodeField .cameraBtn{padding:0 9px}}
+
+/* HOBIMOTO collector garage identity */
+:root{--ink:#17191d;--muted:#858b94;--line:#e5e6e8;--bg:#f1f2f3;--orange:#e23a32;--green:#16865f}
+body{background:radial-gradient(circle at 85% 8%,#e5e7e9 0,transparent 25%),#f1f2f3}
+.sidebar{background:#101216;border-right:1px solid #272a30}
+.brandMark{background:linear-gradient(145deg,#f04a40,#b91f25);border-radius:9px;transform:skew(-5deg);box-shadow:0 5px 18px #e23a3244}
+.brand b{letter-spacing:2.4px}
+.nav.active,.nav:hover{background:#282b31}
+.nav.active svg{color:#ff5a50}
+.sideBottom{border-color:#303239}
+.statusDot,.live i{background:#29bd83}
+.topbar{background:#fff}
+.topbar h1{letter-spacing:-.6px}
+.primary{background:linear-gradient(135deg,#ef4b40,#c9262e);box-shadow:0 6px 16px #d52e3030}
+.primary:hover{background:#c9262e}
+.welcome{background:linear-gradient(112deg,#111317 0%,#24272d 58%,#a91e26 145%);border:1px solid #34373e;min-height:178px;box-shadow:0 12px 30px #15171b16}
+.welcome:before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(135deg,transparent 0 22px,#ffffff08 22px 24px);opacity:.65;pointer-events:none}
+.welcome:after{right:130px;top:-120px;border-color:#ffffff18;box-shadow:0 0 0 35px #ffffff09,0 0 0 70px #ffffff06,0 0 0 105px #ffffff04}
+.welcome h2{font-size:29px;letter-spacing:-.8px}
+.light{color:#ff7169}
+.welcomeVisual{position:relative;z-index:1;width:180px;height:112px;border:1px solid #ffffff25;border-radius:12px;background:linear-gradient(145deg,#ffffff14,#ffffff05);display:flex;flex-direction:column;align-items:flex-end;justify-content:center;padding:13px 15px;color:#fff;overflow:hidden;box-shadow:inset 0 1px #ffffff20}
+.welcomeVisual span{font:800 13px Manrope;letter-spacing:2px}
+.welcomeVisual b{font:700 8px 'DM Sans';letter-spacing:1.6px;color:#ffaaa4;margin-top:4px}
+.welcomeVisual svg{margin-top:13px;color:#ff655d}
+.trackLines{position:absolute;width:170px;height:170px;border:12px solid #ffffff0d;border-radius:50%;left:-95px;bottom:-105px;box-shadow:0 0 0 8px #ffffff08,0 0 0 18px #ffffff06}
+.eyebrow{letter-spacing:2px}
+.stat{box-shadow:0 5px 18px #15171b06;transition:transform .18s ease,box-shadow .18s ease}
+.stat:hover{transform:translateY(-2px);box-shadow:0 10px 24px #15171b10}
+.statIcon{background:#fff0ef;color:#d93332}
+.statIcon.warn{background:#fff4e6;color:#c78316}
+.scannerPanel,.tablePanel,.historyPanel{box-shadow:0 5px 18px #15171b05}
+.modeTabs button.selected{color:#d93332;border-color:#d93332}
+.inputWrap:focus-within,.field input:focus{border-color:#e23a32;box-shadow:0 0 0 3px #e23a3214}
+.cameraBtn{background:#fff0ef;color:#d93332}
+.stockPill.low{background:#fff0ed;color:#cf4036}
+.rowActions button:hover{color:#d93332;background:#fff0ef}
+.historyIcon.out{background:#fff0ef;color:#d93332}
+footer{letter-spacing:2px}
+@media(max-width:680px){.welcome{min-height:150px}.welcome h2{font-size:21px}.welcomeVisual{width:92px;height:92px;padding:9px;flex-shrink:0}.welcomeVisual span{font-size:10px}.welcomeVisual b{font-size:6px;letter-spacing:1px}.welcomeVisual svg{width:30px;height:30px;margin-top:8px}.welcome:after{right:35px}}
