@@ -24,7 +24,7 @@ export default function Home() {
   const [notice,setNotice] = useState<{text:string;bad?:boolean}|null>(null);
   const [camera,setCamera] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const readerRef = useRef<BrowserMultiFormatReader|null>(null);
+  const controlsRef = useRef<{stop:()=>void}|null>(null);
 
   async function refresh() {
     const r = await fetch("/api/data", {cache:"no-store"});
@@ -78,15 +78,16 @@ export default function Home() {
   async function startCamera() {
     try {
       setCamera(true);
-      const reader = new BrowserMultiFormatReader(); readerRef.current=reader;
+      const reader = new BrowserMultiFormatReader();
       await new Promise(r=>setTimeout(r,150));
       if(!videoRef.current) return;
-      await reader.decodeFromVideoDevice(undefined,videoRef.current,(result)=>{
-        if(result){setBarcode(result.getText());setCamera(false);readerRef.current?.reset();setNotice({text:"Barkod okundu."});}
+      const controls = await reader.decodeFromVideoDevice(undefined,videoRef.current,(result)=>{
+        if(result){setBarcode(result.getText());setCamera(false);controlsRef.current?.stop();setNotice({text:"Barkod okundu."});}
       });
+      controlsRef.current = controls;
     } catch(e:any) {setCamera(false);setNotice({text:"Kamera açılamadı. Tarayıcı kamera iznini ve HTTPS bağlantısını kontrol et.",bad:true});}
   }
-  function stopCamera(){readerRef.current?.reset();setCamera(false);}
+  function stopCamera(){controlsRef.current?.stop();controlsRef.current=null;setCamera(false);}
 
   return <main className="shell">
     <aside className="sidebar">
