@@ -23,6 +23,7 @@ export default function Home() {
   const [busy,setBusy] = useState(false);
   const [notice,setNotice] = useState<{text:string;bad?:boolean}|null>(null);
   const [camera,setCamera] = useState(false);
+  const [scanTarget,setScanTarget] = useState<"stock"|"product">("stock");
   const videoRef = useRef<HTMLVideoElement>(null);
   const controlsRef = useRef<{stop:()=>void}|null>(null);
 
@@ -75,14 +76,15 @@ export default function Home() {
     const d=await r.json();if(!r.ok)return setNotice({text:d.error,bad:true});
     setNotice({text:"Ürün silindi."});await refresh();
   }
-  async function startCamera() {
+  async function startCamera(target:"stock"|"product"="stock") {
+    setScanTarget(target);
     try {
       setCamera(true);
       const reader = new BrowserMultiFormatReader();
       await new Promise(r=>setTimeout(r,150));
       if(!videoRef.current) return;
       const controls = await reader.decodeFromVideoDevice(undefined,videoRef.current,(result)=>{
-        if(result){setBarcode(result.getText());setCamera(false);controlsRef.current?.stop();setNotice({text:"Barkod okundu."});}
+        if(result){const scanned=result.getText();if(target==="product")setForm(current=>({...current,barcode:scanned}));else setBarcode(scanned);setCamera(false);controlsRef.current?.stop();controlsRef.current=null;setNotice({text:"Barkod okundu."});}
       });
       controlsRef.current = controls;
     } catch(e:any) {setCamera(false);setNotice({text:"Kamera açılamadı. Tarayıcı kamera iznini ve HTTPS bağlantısını kontrol et.",bad:true});}
@@ -112,11 +114,11 @@ export default function Home() {
         <section className="panel scannerPanel" id="stok">
           <div className="panelHead"><div><span className="eyebrow">HIZLI İŞLEM</span><h3>Barkod merkezi</h3></div><span className="live"><i/> CANLI</span></div>
           <div className="modeTabs">{(["Çıkış","Giriş","Sorgula"] as const).map(m=><button key={m} className={mode===m?"selected":""} onClick={()=>setMode(m)}>{m==="Çıkış"?<ArrowDownToLine size={16}/>:m==="Giriş"?<ArrowUpFromLine size={16}/>:<Search size={16}/>} {m}</button>)}</div>
-          <div className="scanGrid"><div className="scanInput"><label>BARKOD NUMARASI</label><div className="inputWrap"><Barcode size={19}/><input autoFocus value={barcode} onChange={e=>setBarcode(e.target.value)} onKeyDown={e=>e.key==="Enter"&& (mode==="Sorgula"?setNotice({text:found?`${found.name} • ${found.price} TL • Stok ${found.stock}`:"Ürün bulunamadı.",bad:!found}):stockAction())} placeholder="Barkodu okut veya yaz..."/><button className="cameraBtn" onClick={startCamera}><Camera size={18}/></button></div>
+          <div className="scanGrid"><div className="scanInput"><label>BARKOD NUMARASI</label><div className="inputWrap"><Barcode size={19}/><input autoFocus value={barcode} onChange={e=>setBarcode(e.target.value)} onKeyDown={e=>e.key==="Enter"&& (mode==="Sorgula"?setNotice({text:found?`${found.name} • ${found.price} TL • Stok ${found.stock}`:"Ürün bulunamadı.",bad:!found}):stockAction())} placeholder="Barkodu okut veya yaz..."/><button className="cameraBtn" onClick={()=>startCamera("stock")}><Camera size={18}/></button></div>
           {found?<div className="found"><Check size={15}/><span><b>{found.name}</b> · {found.stock} adet · {found.price.toLocaleString("tr-TR")} TL</span></div>:barcode&&<div className="mutedHint">Bu barkod henüz kayıtlı değil.</div>}
           </div><div className="qtyBox"><label>ADET</label><div className="qtyControl"><button onClick={()=>setQuantity(Math.max(1,quantity-1))}>−</button><input type="number" min="1" value={quantity} onChange={e=>setQuantity(Math.max(1,Number(e.target.value)))}/><button onClick={()=>setQuantity(quantity+1)}>+</button></div></div></div>
           <div className="actionRow"><input className="userInput" value={user} onChange={e=>setUser(e.target.value)} placeholder="Personel adı"/><button className="primary actionButton" disabled={busy} onClick={()=>mode==="Sorgula"?(found?setNotice({text:`${found.name} • ${found.price} TL • Stok ${found.stock}`}):setNotice({text:"Ürün bulunamadı.",bad:true})):stockAction()}>{busy?"İşleniyor...":mode==="Çıkış"?"Stoktan Düş":mode==="Giriş"?"Stok Ekle":"Ürünü Sorgula"} <ChevronRight size={17}/></button></div>
-          {camera&&<div className="cameraLayer"><div className="cameraHead">Barkod taranıyor <button onClick={stopCamera}><X/></button></div><video ref={videoRef}/><p>Barkodu çerçevenin içine hizala.</p></div>}
+          {camera&&scanTarget==="stock"&&<div className="cameraLayer"><div className="cameraHead">Barkod taranıyor <button onClick={stopCamera}><X/></button></div><video ref={videoRef}/><p>Barkodu çerçevenin içine hizala.</p></div>}
         </section>
         <div className="sectionTitle" id="urunler"><div><span className="eyebrow">ENVANTER</span><h3>Ürün listesi</h3></div><div className="searchBox"><Search size={17}/><input value={query} onChange={e=>setQuery(e.target.value)} placeholder="Ürün veya barkod ara..."/></div></div>
         <div className="panel tablePanel"><div className="tableScroll"><table><thead><tr><th>ÜRÜN</th><th>BARKOD</th><th>KATEGORİ</th><th>FİYAT</th><th>STOK</th><th>RAF</th><th></th></tr></thead><tbody>
@@ -131,14 +133,14 @@ export default function Home() {
     {notice&&<div className={`toast ${notice.bad?"bad":""}`}>{notice.bad?<AlertTriangle size={17}/>:<Check size={17}/>} {notice.text}<button onClick={()=>setNotice(null)}><X size={15}/></button></div>}
     {modal&&<div className="modalBackdrop" onClick={()=>setModal(false)}><div className="modal" onClick={e=>e.stopPropagation()}><div className="modalHead"><div><span className="eyebrow">ENVANTER KAYDI</span><h3>{editing?"Ürünü düzenle":"Yeni ürün ekle"}</h3></div><button onClick={()=>setModal(false)}><X/></button></div>
       <div className="formGrid">
-        <Field label="Barkod" value={form.barcode} disabled={!!editing} onChange={v=>setForm({...form,barcode:v})}/>
+        <label className="field"><span>Barkod</span><div className="productBarcodeField"><input value={form.barcode} disabled={!!editing} onChange={e=>setForm({...form,barcode:e.target.value})} placeholder="Barkod numarası"/>{!editing&&<button type="button" className="cameraBtn" title="Barkod tara" onClick={()=>startCamera("product")}><Camera size={18}/><span> Tara</span></button>}</div></label>
         <Field label="Ürün adı" value={form.name} onChange={v=>setForm({...form,name:v})}/>
         <Field label="Kategori" value={form.category} onChange={v=>setForm({...form,category:v})}/>
         <Field label="Birim fiyat (₺)" type="number" value={String(form.price)} onChange={v=>setForm({...form,price:Number(v)})}/>
         <Field label="Mevcut stok" type="number" value={String(form.stock)} onChange={v=>setForm({...form,stock:Number(v)})}/>
         <Field label="Kritik stok seviyesi" type="number" value={String(form.critical)} onChange={v=>setForm({...form,critical:Number(v)})}/>
         <Field label="Raf yeri" value={form.shelf} onChange={v=>setForm({...form,shelf:v})}/>
-      </div><div className="modalActions"><button className="secondary" onClick={()=>setModal(false)}>Vazgeç</button><button className="primary" disabled={busy} onClick={save}>{busy?"Kaydediliyor...":"Kaydet"}</button></div>
+      </div>{camera&&scanTarget==="product"&&<div className="cameraLayer modalCameraLayer"><div className="cameraHead">Ürün barkodu taranıyor <button onClick={stopCamera}><X/></button></div><video ref={videoRef}/><p>Barkodu kameraya göster. Okununca ürün formuna aktarılacak.</p></div>}<div className="modalActions"><button className="secondary" onClick={()=>setModal(false)}>Vazgeç</button><button className="primary" disabled={busy} onClick={save}>{busy?"Kaydediliyor...":"Kaydet"}</button></div>
     </div></div>}
   </main>;
 }
