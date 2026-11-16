@@ -1,12 +1,11 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { LockKeyhole, Package } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
-  const params = useSearchParams();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -24,7 +23,7 @@ export default function LoginPage() {
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || "Giriş yapılamadı.");
-      const next = params.get("next");
+      const next = new URLSearchParams(window.location.search).get("next");
       router.replace(next && next.startsWith("/") && !next.startsWith("//") ? next : "/");
       router.refresh();
     } catch (e: unknown) {
