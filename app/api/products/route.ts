@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { deleteProduct, saveProduct, type Product } from "@/lib/sheets";
+import { requireAuth } from "@/lib/require-auth";
 
 export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
+  const denied = requireAuth(req);
+  if (denied) return denied;
   try {
     const body = await req.json();
     const p: Product = {
@@ -21,6 +24,8 @@ export async function POST(req: NextRequest) {
   }
 }
 export async function DELETE(req: NextRequest) {
+  const denied = requireAuth(req);
+  if (denied) return denied;
   try {
     const barcode = req.nextUrl.searchParams.get("barcode");
     if (!barcode) return NextResponse.json({ error: "Barkod gerekli." }, { status: 400 });
