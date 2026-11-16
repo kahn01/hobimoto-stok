@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { adjustStock } from "@/lib/sheets";
+import { requireAuth } from "@/lib/require-auth";
 
 export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
+  const denied = requireAuth(req);
+  if (denied) return denied;
   try {
     const body = await req.json();
     const barcode = String(body.barcode || "").trim();
